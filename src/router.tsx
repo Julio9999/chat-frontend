@@ -1,17 +1,23 @@
 import { BrowserRouter, Route, Routes } from "react-router"
 import App from "./App"
-import { LoginPage } from "./modules/login/pages/login-page"
+import { LoginPage } from "./modules/auth/pages/login-page"
 import ChatPage from "./modules/chat/pages/chat-page";
+import { ProtectedLayout } from "./components/common/protected-layout";
 
 export const MainRouter = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route index element={<App />} />
-
                 <Route path="/login" element={<LoginPage />} />
 
-                <Route path="/chat" element={<ChatPage/>} />
+
+
+                <Route element={<ProtectedLayout />}> 
+                    <Route path="/" element={<App />} />
+                    <Route path="/chat" element={<ChatPage />} />
+                </Route>
+
+
             </Routes>
         </BrowserRouter>
     )

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { LoginService } from '../services/login-service';
+import { AuthService } from '../services/auth-service';
 import { useNavigate } from "react-router"
 
 export default function Component() {
@@ -19,8 +19,8 @@ export default function Component() {
 
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault()
-        await LoginService.login(username, password);
-        navigate('/')
+        await AuthService.login(username, password);
+        navigate('/chat')
     }
 
     return (

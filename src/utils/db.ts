@@ -1,4 +1,5 @@
 // src/lib/db.ts
+import type { ChatMessage } from '@/interfaces/chat/chat-interfaces';
 import { openDB } from 'idb';
 
 const DB_NAME = 'chat-db';
@@ -14,7 +15,7 @@ export const getDB = async () => {
   });
 };
 
-export const saveMessage = async (message: any) => {
+export const saveMessage = async (message: ChatMessage) => {
   const db = await getDB();
   await db.add(STORE_NAME, {
     timestamp: Date.now(),

@@ -9,6 +9,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "strict": false
   }
 }
