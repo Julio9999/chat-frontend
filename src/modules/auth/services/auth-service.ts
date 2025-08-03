@@ -6,11 +6,17 @@ const login = (username: string, password: string) => {
     return apiClient.post(url, {username, password})
 }
 
+const logout = () => {
+    const url = "/auth/logout";
+    return apiClient.get(url);
+}
+
 const validateToken = () => {
     const url = "/auth/validate-token";     
     return apiClient.get<ValidateTokenResponse>(url);
 }
 export const AuthService = {
     login,
+    logout,
     validateToken
 }

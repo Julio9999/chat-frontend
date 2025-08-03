@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useChatBotPage } from "../hooks/use-chat-bot-page";
+import { ChatBubble } from "../components/chat-bubble";
 
 function ChatPage() {
   const {
@@ -15,12 +16,7 @@ function ChatPage() {
     <div className="flex flex-col h-screen  text-white p-4 w-full ">
       <div className="overflow-auto w-full max-h-[80vh]  flex flex-col gap-2">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className="bg-zinc-800 text-white p-2 rounded-md"
-          >
-            {msg?.message || JSON.stringify(msg)}
-          </div>
+          <ChatBubble msg={msg.message} timestamp={msg.timestamp} key={msg.id}  />
         ))}
       </div>
 
