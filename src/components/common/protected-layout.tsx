@@ -12,6 +12,7 @@ export const ProtectedLayout = () => {
     useEffect(() => {
         AuthService.validateToken().then(response => {
             setUserData(response.data.data);
+            document.cookie = `login_duration=${response.data.data.maxAge}; max-age=${response.data.data.maxAge}; path=/; secure; samesite=none`;
         }).catch(() => {
             navigate('/login')
         })

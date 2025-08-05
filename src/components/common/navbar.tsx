@@ -13,6 +13,7 @@ export const Navbar = () => {
   const clearUserData = useMainStore(store => store.clearUserData);
   const navigate = useNavigate();
 
+
   const handleLogout = async () => {
     await AuthService.logout()
     clearUserData();
