@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router"
+import { Route, Routes, HashRouter } from "react-router"
 import App from "./App"
 import { LoginPage } from "./modules/auth/pages/login-page"
 import ChatPage from "./modules/chat/pages/chat-page";
@@ -6,7 +6,7 @@ import { ProtectedLayout } from "./components/common/protected-layout";
 
 export const MainRouter = () => {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
 
@@ -19,6 +19,6 @@ export const MainRouter = () => {
 
 
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
