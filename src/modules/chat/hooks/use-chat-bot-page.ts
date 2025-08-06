@@ -7,7 +7,7 @@ export const useChatBotPage = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-  const { sendMessage } = useWebSocket("ws://localhost:3000/ws", {
+  const { sendMessage } = useWebSocket(import.meta.env.VITE_WSS_URL, {
     onMessage: async (e) => {
       const data = JSON.parse(e.data);
       const id = new Date().getTime();
