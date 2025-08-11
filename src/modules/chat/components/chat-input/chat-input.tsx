@@ -1,12 +1,13 @@
 import { ButtonPrimary } from "@/components/common/button-primary";
 import { Input } from "@/components/ui/input";
+import React from "react";
 import { useState } from "react";
 
 interface Props {
     onClick: (value: string) => void;
 }
 
-export const ChatInput = ({onClick}: Props) => {
+const ChatInputComponent = ({onClick}: Props) => {
 
     const [message, setMessage] = useState("");
 
@@ -34,3 +35,5 @@ export const ChatInput = ({onClick}: Props) => {
         </>
     )
 }
+
+export const ChatInput = React.memo(ChatInputComponent);

@@ -1,13 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { useWebSocket } from "@/hooks/use-web-socket";
 import type { ChatMessage } from "@/interfaces/chat/chat-interfaces";
 import { getAllMessages, saveMessage } from "@/utils/db";
 import { useChatStore } from '../stores/chat-store';
 
 export const useChatBotPage = () => {
-  
-  const scrollRef = useRef<HTMLDivElement>(null);
-
 
   const setMessages = useChatStore(store => store.setMessages);
   const addMessage = useChatStore(store => store.addMessage);
@@ -30,17 +27,13 @@ export const useChatBotPage = () => {
     },
   });
 
-  useEffect(() => {
-    const div = scrollRef.current;
-    if (!div) return;
-    div.scrollTop = div.scrollHeight;
-  }, [messages]);
+
 
   useEffect(() => {
     getAllMessages().then((msgs) => setMessages(msgs));
   }, []);
 
-  const handleSendMessage = (value: string) => {
+  const handleSendMessage = useCallback((value: string) => {
     sendMessage({
       event: "send_message",
       payload: {
@@ -48,11 +41,10 @@ export const useChatBotPage = () => {
         message: value,
       },
     });
-  };
+  }, [sendMessage]);
 
   return {
     messages,
-    scrollRef,
     handleSendMessage,
     clearMessages
   };
