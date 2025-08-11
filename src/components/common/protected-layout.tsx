@@ -12,14 +12,13 @@ export const ProtectedLayout = () => {
     useEffect(() => {
         AuthService.validateToken().then(response => {
             setUserData(response.data.data);
-            document.cookie = `login_duration=${response.data.data.maxAge}; max-age=${response.data.data.maxAge}; path=/; secure; samesite=none`;
         }).catch(() => {
             navigate('/login')
         })
     }, [])
 
     return (
-        <div className="flex flex-col gap-4 bg-zinc-900 h-screen">
+        <div className="flex flex-col gap-4 h-screen custom-background">
             <Navbar />
             <Outlet />
         </div>

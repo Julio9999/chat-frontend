@@ -1,11 +1,20 @@
+import { useEffect, useRef } from "react";
 import { useWebSocket } from "@/hooks/use-web-socket";
 import type { ChatMessage } from "@/interfaces/chat/chat-interfaces";
 import { getAllMessages, saveMessage } from "@/utils/db";
-import { useEffect, useState } from "react";
+import { useChatStore } from '../stores/chat-store';
 
 export const useChatBotPage = () => {
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+
+  const setMessages = useChatStore(store => store.setMessages);
+  const addMessage = useChatStore(store => store.addMessage);
+  const clearMessages = useChatStore(store => store.clearMessages);
+
+  const messages = useChatStore(store => store.messages);
+
 
   const { sendMessage } = useWebSocket(import.meta.env.VITE_WSS_URL, {
     onMessage: async (e) => {
@@ -16,31 +25,35 @@ export const useChatBotPage = () => {
         message: data.message,
         timestamp: Date.now(),
       };
-      setMessages((current) => [...current, newMessage]);
+      addMessage(newMessage);
       await saveMessage(data);
     },
   });
 
   useEffect(() => {
+    const div = scrollRef.current;
+    if (!div) return;
+    div.scrollTop = div.scrollHeight;
+  }, [messages]);
+
+  useEffect(() => {
     getAllMessages().then((msgs) => setMessages(msgs));
   }, []);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = (value: string) => {
     sendMessage({
       event: "send_message",
       payload: {
         userId: 1,
-        message: message,
+        message: value,
       },
     });
-    setMessage("")
   };
 
   return {
-    message,
-    setMessage,
     messages,
+    scrollRef,
     handleSendMessage,
-    clearMessages: () => setMessages([]),
+    clearMessages
   };
 };

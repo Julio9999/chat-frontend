@@ -3,12 +3,12 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AuthService } from '../services/auth-service';
 import { useNavigate } from "react-router"
+import { ButtonPrimary } from "@/components/common/button-primary"
 
 export default function Component() {
 
@@ -24,7 +24,7 @@ export default function Component() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="min-h-screen flex items-center justify-center  custom-background p-4">
             <Card className="w-full max-w-md shadow-xl">
                 <CardHeader className="space-y-1 text-center">
                     <CardTitle className="text-3xl font-bold text-gray-900">Iniciar Sesión</CardTitle>
@@ -51,12 +51,11 @@ export default function Component() {
                     </CardContent>
 
                     <CardFooter className="flex flex-col space-y-4">
-                        <Button
+                        <ButtonPrimary
                             type="submit"
-                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                         >
                             Iniciar Sesión
-                        </Button>
+                        </ButtonPrimary>
                     </CardFooter>
                 </form>
             </Card>
