@@ -1,18 +1,14 @@
-import { useEffect, useRef } from "react";
-import { useChatStore } from "../../stores/chat-store";
 import { ChatBubble } from "../chat-bubble/chat-bubble"
+
+import { useChatBubbles } from './use-chat-bubbles';
 
 export const ChatBubbles = () => {
 
-    const messages = useChatStore(store => store.messages);
+    const {
+        messages,
+        scrollRef
+    } = useChatBubbles();
 
-    const scrollRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const div = scrollRef.current;
-        if (!div) return;
-        div.scrollTop = div.scrollHeight;
-    }, [messages]);
 
     return (
         <div

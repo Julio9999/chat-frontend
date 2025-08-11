@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router";
 import { AuthService } from "../../modules/auth/services/auth-service";
 import { useMainStore } from "@/stores/main-store";
 import { Navbar } from "./navbar";
+import { wsClient } from "@/lib/ws-client";
 export const ProtectedLayout = () => {
     
     const navigate = useNavigate();
@@ -15,6 +16,10 @@ export const ProtectedLayout = () => {
         }).catch(() => {
             navigate('/login')
         })
+    }, [])
+
+    useEffect(() => {
+        wsClient.connect(import.meta.env.VITE_WSS_URL);
     }, [])
 
     return (

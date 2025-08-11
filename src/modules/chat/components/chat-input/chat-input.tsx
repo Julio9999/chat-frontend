@@ -1,15 +1,25 @@
 import { ButtonPrimary } from "@/components/common/button-primary";
 import { Input } from "@/components/ui/input";
+import { wsClient } from "@/lib/ws-client";
 import React from "react";
 import { useState } from "react";
 
-interface Props {
-    onClick: (value: string) => void;
-}
 
-const ChatInputComponent = ({onClick}: Props) => {
+const ChatInputComponent = () => {
 
     const [message, setMessage] = useState("");
+
+    const handleSendMessage = (value: string) => {
+        wsClient.sendMessage({
+            event: "send_message",
+            payload: {
+                userId: 1,
+                message: value,
+            },
+        });
+    };
+
+    console.log("ChatInputComponent rendered");
 
     return (
         <>
@@ -19,14 +29,14 @@ const ChatInputComponent = ({onClick}: Props) => {
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" && message.trim() !== "") {
-                        onClick(message)
+                        handleSendMessage(message)
                         setMessage("")
                     }
                 }}
             />
             <ButtonPrimary
                 onClick={() => {
-                    onClick(message)
+                    handleSendMessage(message)
                     setMessage("")
                 }}
             >
