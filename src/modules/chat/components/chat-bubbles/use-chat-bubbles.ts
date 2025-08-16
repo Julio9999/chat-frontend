@@ -31,9 +31,9 @@ export const useChatBubbles = () => {
     }, [messages]);
 
     useEffect(() => {
-        wsClient.on("onNewMessage", handleMessage);
+        wsClient.on("on_new_message", handleMessage);
         return () => {
-            wsClient.off("onNewMessage",handleMessage);
+            wsClient.off("on_new_message",handleMessage);
         };
     }, [handleMessage]);
 
