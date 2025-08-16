@@ -13,16 +13,15 @@ export const useChatBubbles = () => {
 
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const handleMessage = useCallback(async (e: MessageEvent) => {
-        const data = JSON.parse(e.data);
+    const handleMessage = useCallback(async (message: string) => {
         const id = new Date().getTime();
         const newMessage: ChatMessage = {
             id,
-            message: data.message,
+            message,
             timestamp: Date.now(),
         };
         addMessage(newMessage);
-        await IndexedDBClient.saveMessage(data);
+        await IndexedDBClient.saveMessage(newMessage);
     }, [addMessage])
 
     useEffect(() => {
@@ -32,9 +31,9 @@ export const useChatBubbles = () => {
     }, [messages]);
 
     useEffect(() => {
-        wsClient.addListener(handleMessage);
+        wsClient.on("onNewMessage", handleMessage);
         return () => {
-            wsClient.removeListener(handleMessage);
+            wsClient.off("onNewMessage",handleMessage);
         };
     }, [handleMessage]);
 

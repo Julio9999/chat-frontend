@@ -8,7 +8,7 @@ interface MainState {
 }
 
 export const useMainStore = create<MainState>((set) => ({
-    userData: { username: "", email: "" },
+    userData: { username: "", email: "", id: 0 },
     setUserData: (userData) => set({ userData }),
-    clearUserData: () => set({ userData: { username: "", email: "" } })
+    clearUserData: () => set({ userData: { username: "", email: "", id: 0 } })
 }));

@@ -9,6 +9,7 @@ export const ProtectedLayout = () => {
     const navigate = useNavigate();
 
     const setUserData = useMainStore(store => store.setUserData);
+    const userData = useMainStore(store => store.userData);
 
     useEffect(() => {
         AuthService.validateToken().then(response => {
@@ -19,8 +20,15 @@ export const ProtectedLayout = () => {
     }, [])
 
     useEffect(() => {
-        wsClient.connect(import.meta.env.VITE_WSS_URL);
-    }, [])
+        if(userData.id === 0) return;   
+        console.log("Connecting to WebSocket server...");
+        wsClient.connect(import.meta.env.VITE_WSS_URL, userData.id);
+
+        return () => {
+            console.log("Disconnecting from WebSocket server...");
+            wsClient.disconnect();
+        }
+    }, [userData])
 
     return (
         <div className="flex flex-col gap-4 h-screen custom-background">

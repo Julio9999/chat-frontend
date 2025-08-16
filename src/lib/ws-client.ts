@@ -1,51 +1,54 @@
-type MessageHandler = (event: MessageEvent) => void;
-type OpenHandler = () => void;
-type CloseHandler = (event: CloseEvent) => void;
-type ErrorHandler = (event: Event) => void;
+type EventName = string;
+type EventHandler = (payload: unknown) => void;
 
 export class WSClient {
-
   private socket: WebSocket | null = null;
   private url: string = "";
-  private listeners: Set<MessageHandler> = new Set();
-  private openListeners: Set<OpenHandler> = new Set();
-  private closeListeners: Set<CloseHandler> = new Set();
-  private errorListeners: Set<ErrorHandler> = new Set();
+  private userId: number | null = null;
 
-  private reconnectTimeout: number = 3000; // ms
+  private eventListeners: Map<EventName, Set<EventHandler>> = new Map();
+
+  private reconnectTimeout: number = 3000;
   private shouldReconnect: boolean = true;
   private reconnectTimer?: ReturnType<typeof setTimeout>;
 
-  connect(url: string) {
+  connect(url: string, userId: number) {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
-
+    this.userId = userId;
     this.url = url;
     this.shouldReconnect = true;
 
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {
-      this.openListeners.forEach((cb) => cb());
       console.log("[WSClient] Conectado");
     };
 
     this.socket.onmessage = (event) => {
-      this.listeners.forEach((cb) => cb(event));
+      const data = JSON.parse(event.data);
+      const eventName = data.event as EventName;
+      const payload = data.payload;
+
+      const handlers = this.eventListeners.get(eventName);
+      if (handlers) {
+        handlers.forEach((cb) => cb(payload));
+      }
     };
 
     this.socket.onerror = (event) => {
-      this.errorListeners.forEach((cb) => cb(event));
-      console.error("[WSClient] Error", event);
+      if (
+        this.socket.readyState !== WebSocket.CLOSING &&
+        this.socket.readyState !== WebSocket.CLOSED
+      ) {
+        console.error("[WSClient] Error", event);
+      }
     };
-
-    this.socket.onclose = (event) => {
-      this.closeListeners.forEach((cb) => cb(event));
-      console.log("[WSClient] Cerrado", event);
-
+    this.socket.onclose = () => {
+      console.log("[WSClient] Cerrado");
       if (this.shouldReconnect) {
         this.reconnectTimer = setTimeout(() => {
           console.log("[WSClient] Reintentando conexión...");
-          this.connect(this.url);
+          this.connect(this.url, this.userId);
         }, this.reconnectTimeout);
       }
     };
@@ -53,53 +56,30 @@ export class WSClient {
 
   disconnect() {
     this.shouldReconnect = false;
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-    }
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     this.socket?.close();
   }
 
-  sendMessage(msg: unknown) {
+  sendMessage(event: EventName, payload: unknown) {
     if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(msg));
+      this.socket.send(JSON.stringify({ event, payload, userId: this.userId }));
     } else {
-      console.warn(
-        "[WSClient] Socket no está abierto, mensaje no enviado:",
-        msg
-      );
+      console.warn("[WSClient] Socket no está abierto, mensaje no enviado", {
+        event,
+        payload,
+      });
     }
   }
 
-  addListener(cb: MessageHandler) {
-    this.listeners.add(cb);
+  on(event: EventName, cb: EventHandler) {
+    if (!this.eventListeners.has(event)) {
+      this.eventListeners.set(event, new Set());
+    }
+    this.eventListeners.get(event)!.add(cb);
   }
 
-  removeListener(cb: MessageHandler) {
-    this.listeners.delete(cb);
-  }
-
-  addOpenListener(cb: OpenHandler) {
-    this.openListeners.add(cb);
-  }
-
-  removeOpenListener(cb: OpenHandler) {
-    this.openListeners.delete(cb);
-  }
-
-  addCloseListener(cb: CloseHandler) {
-    this.closeListeners.add(cb);
-  }
-
-  removeCloseListener(cb: CloseHandler) {
-    this.closeListeners.delete(cb);
-  }
-
-  addErrorListener(cb: ErrorHandler) {
-    this.errorListeners.add(cb);
-  }
-
-  removeErrorListener(cb: ErrorHandler) {
-    this.errorListeners.delete(cb);
+  off(event: EventName, cb: EventHandler) {
+    this.eventListeners.get(event)?.delete(cb);
   }
 }
 

@@ -4,22 +4,26 @@ import { wsClient } from "@/lib/ws-client";
 import React from "react";
 import { useState } from "react";
 
+const handleSendMessage = (value: string) => {
+    wsClient.sendMessage(
+        "send_message",
+        {
+            message: value,
+        },
+    );
+};
+
+const handleWriting = (isWriting: boolean) => {
+    wsClient.sendMessage("on_writting", {
+        writting: isWriting,
+    });
+};
+
 
 const ChatInputComponent = () => {
 
     const [message, setMessage] = useState("");
 
-    const handleSendMessage = (value: string) => {
-        wsClient.sendMessage({
-            event: "send_message",
-            payload: {
-                userId: 1,
-                message: value,
-            },
-        });
-    };
-
-    console.log("ChatInputComponent rendered");
 
     return (
         <>
@@ -33,6 +37,8 @@ const ChatInputComponent = () => {
                         setMessage("")
                     }
                 }}
+                onFocus={() => handleWriting(true)}
+                onBlur={() => handleWriting(false)}
             />
             <ButtonPrimary
                 onClick={() => {
